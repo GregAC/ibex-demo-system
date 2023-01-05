@@ -11,6 +11,8 @@
 #include "lowrisc_logo.h"
 #include "lcd.h"
 #include "fractal.h"
+#include "fractal_fp.h"
+
 
 // Constants.
 enum{
@@ -29,7 +31,6 @@ enum{
 static uint32_t spi_write(void *handle, uint8_t *data, size_t len);
 static uint32_t gpio_write(void *handle, bool cs, bool dc);
 static void timer_delay(uint32_t ms);
-static void timer_delay_micro(uint64_t micro);
 static void fractal_test(St7735Context *lcd);
 static void pwm_test(St7735Context *lcd);
 static void led_test(St7735Context *lcd);
@@ -45,6 +46,8 @@ typedef enum {
 static Buttons_t scan_buttons(uint32_t timeout);
 
 int main(void) {
+  timer_init();
+
   // Set the initial state of the LCD control pins.
   set_output_bit(GPIO_OUT, LcdDcPin, 0x0);
   set_output_bit(GPIO_OUT, LcdBlPin, 0x1);
@@ -83,49 +86,53 @@ int main(void) {
   lcd_st7735_draw_rgb565(&lcd, (LCD_rectangle){.origin = {.x = (160 - 105)/2, .y = 5},
                                 .width = 105, .height = 80}, (uint8_t*)lowrisc_logo_105x80);
   lcd_println(&lcd, "Booting...", alined_center, 7);
-  timer_delay(1000); 
+  timer_delay(1000);
 
   do {
-    lcd_st7735_clean(&lcd);
-    // Show the main menu.
-    const char * items[] = {"0. LED","1. Fractal","2. PWM",};
-    Menu_t main_menu = {
-      .title = "Main menu",
-      .color = BGRColorBlue,
-      .selected_color = BGRColorRed,
-      .background = BGRColorWhite,
-      .items_count = sizeof(items)/sizeof(items[0]),
-      .items = items,
-    };
-    lcd_show_menu(&lcd, &main_menu);
+    //lcd_st7735_clean(&lcd);
+    //// Show the main menu.
+    //const char * items[] = {"0. LED","1. Fractal", "2. PWM",};
+    //Menu_t main_menu = {
+    //  .title = "Main menu",
+    //  .color = BGRColorBlue,
+    //  .selected_color = BGRColorRed,
+    //  .background = BGRColorWhite,
+    //  .items_count = sizeof(items)/sizeof(items[0]),
+    //  .items = items,
+    //};
+    //lcd_show_menu(&lcd, &main_menu);
 
     // TODO: Read the buttons.
-    switch(scan_buttons(1000)){
-      case BTN0:
-        led_test(&lcd);
-      break;
-      case BTN1:
-        // Run the fractal examples.
-        fractal_test(&lcd);
-      break;
-      case BTN2:
-        // Run the pwm example.
-        pwm_test(&lcd);
-      break;
-      case BTN3:
-      break;
-      default:
-      break;
-    }
+    //switch(scan_buttons(1000)){
+    //  case BTN0:
+    //    led_test(&lcd);
+    //  break;
+    //  case BTN1:
+    //    // Run the fractal examples.
+    //    fractal_test(&lcd);
+    //  break;
+    //  case BTN2:
+    //    // Run the pwm example.
+    //    pwm_test(&lcd);
+    //  break;
+    //  case BTN3:
+    //  break;
+    //  default:
+    //  break;
+    //}
+    fractal_test(&lcd);
   } while(1);
 }
 
 static void fractal_test(St7735Context *lcd){
-    fractal_bifurcation(lcd);
-    timer_delay(2000); 
+    //fractal_bifurcation(lcd);
+    //timer_delay(2000);
 
     fractal_mandelbrot(lcd, true);
-    timer_delay(5000); 
+    timer_delay(5000);
+
+    fractal_mandelbrot_fp(lcd);
+    timer_delay(5000);
 }
 
 
@@ -139,7 +146,7 @@ static void led_test(St7735Context *lcd){
 
 static Buttons_t scan_buttons(uint32_t timeout){
   //TODO
-  timer_delay(timeout); 
+  timer_delay(timeout);
   return BTN1;
 }
 
@@ -147,8 +154,8 @@ static uint32_t spi_write(void *handle, uint8_t *data, size_t len){
     while(len--){
       spi_send_byte_blocking(handle, *data++);
     }
-    // while((spi_get_status(handle) & spi_status_fifo_empty) != spi_status_fifo_empty);
-    return 0;
+    while((spi_get_status(handle) & spi_status_fifo_empty) != spi_status_fifo_empty);
+    //return 0;
 }
 
 static uint32_t gpio_write(void *handle, bool cs, bool dc){
@@ -158,17 +165,9 @@ static uint32_t gpio_write(void *handle, bool cs, bool dc){
 }
 
 static void timer_delay(uint32_t ms){
-  while(ms--){
-    timer_delay_micro(1000);
-  }
-  return;
+  timer_enable(50000);
   uint32_t timeout = get_elapsed_time() + ms;
-  while(get_elapsed_time() < timeout){}
+  while(get_elapsed_time() < timeout){ asm volatile ("wfi"); }
+  timer_disable();
 }
 
-static void timer_delay_micro(uint64_t micro){
-  while(micro--){
-    for(uint32_t j = 0; j < 2; ++j){
-    }
-  }
-}

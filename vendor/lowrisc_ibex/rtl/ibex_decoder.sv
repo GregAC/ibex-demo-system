@@ -638,6 +638,25 @@ module ibex_decoder #(
         end
 
       end
+
+      OPCODE_CMPLX: begin
+        rf_ren_a_o      = 1'b1;
+        rf_ren_b_o      = 1'b1;
+        rf_we           = 1'b1;
+
+        case (instr[14:12])
+          3'b000, 3'b001, 3'b010: illegal_insn = 1'b0;
+          default: illegal_insn = 1'b1;
+        endcase
+
+        if (instr[14:12] == 3'b010) begin
+          if (instr_rs2 != 5'b0) begin
+            illegal_insn = 1'b1;
+          end
+          rf_ren_b_o = 1'b0;
+        end
+      end
+
       default: begin
         illegal_insn = 1'b1;
       end
@@ -1181,6 +1200,19 @@ module ibex_decoder #(
         end
 
       end
+
+      OPCODE_CMPLX: begin  // Register-Register ALU operation
+        alu_op_a_mux_sel_o = OP_A_REG_A;
+        alu_op_b_mux_sel_o = OP_B_REG_B;
+
+        case (instr_alu[14:12])
+          3'b000: alu_operator_o = ALU_CMPLX_MUL;
+          3'b001: alu_operator_o = ALU_CMPLX_ADD;
+          3'b010: alu_operator_o = ALU_CMPLX_ABS_SQ;
+          default: ;
+        endcase
+      end
+
       default: ;
     endcase
   end

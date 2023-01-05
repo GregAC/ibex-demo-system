@@ -41,7 +41,7 @@ void fractal_mandelbrot(St7735Context *lcd, bool by_pixel)
     }
 
 	unsigned int iX, iY, iterator, counter = 0;
-	const unsigned int iterationMax = 200;
+	const unsigned int iterationMax = 50;
 	const double MinRe = -2.5, MaxRe = 1.5, MinIm = -2.0, escapeRadius = 2;
 	const double MaxIm = MinIm + (MaxRe - MinRe) * WIDTH / HEIGHT ;
 	const double Re_factor = (MaxRe - MinRe) / HEIGHT;

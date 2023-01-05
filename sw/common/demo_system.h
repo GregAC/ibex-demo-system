@@ -30,6 +30,11 @@
 #define SPI0_BASE 0x80004000
 #define DEFAULT_SPI SPI_FROM_BASE_ADDR(SPI0_BASE)
 
+#define SIM_CTRL_BASE 0x20000
+#define SIM_CTRL_CHAR_OUT 0x0
+#define SIM_CTRL_HALT 0x8
+
+
 /**
  * Writes character to default UART. Signature matches c stdlib function
  * of the same name.
