@@ -30,7 +30,9 @@ module top_sonata (
   input  logic tck_i,
   input  logic tms_i,
   input  logic td_i,
-  output logic td_o
+  output logic td_o,
+
+  output logic rgbled0
 );
   parameter SRAMInitFile = "";
 
@@ -79,6 +81,12 @@ module top_sonata (
     .tck_i,
     .td_i,
     .td_o
+  );
+
+  sonata_rgbled u_sonata_rgbled (
+    .mainclk(mainclk_buf),
+    .rst_n(rst_sys_n),
+    .rgbled0
   );
 
   // Produce 50 MHz system clock from 25 MHz Sonata board clock

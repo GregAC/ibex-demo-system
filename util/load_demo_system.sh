@@ -19,7 +19,7 @@ if [ $1 != "halt" ] && [ $1 != "run" ]; then
 fi
 
 SCRIPT_DIR="$(dirname "$(readlink -e "$0")")"
-TCL_FILE=$SCRIPT_DIR/arty-a7-openocd-cfg.tcl
+TCL_FILE=$SCRIPT_DIR/sonata-openocd-cfg.tcl
 
 if [ $# -eq 3 ]; then
   if [ ! -f $3 ]; then

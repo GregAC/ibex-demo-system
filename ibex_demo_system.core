@@ -88,7 +88,8 @@ parameters:
   SRAMInitFile:
     datatype: str
     description: SRAM initialization file in vmem hex format
-    default: "../../../../../sw/c/build/blank/blank.vmem"
+    #default: "../../../../../sw/c/build/blank/blank.vmem"
+    default: "../../../../../sw/c/build/demo/lcd_sunburst/lcd_sunburst.vmem"
     paramtype: vlogparam
 
   # For value definition, please see ip/prim/rtl/prim_pkg.sv

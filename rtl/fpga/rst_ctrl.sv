@@ -72,7 +72,7 @@ module rst_ctrl #(
       if (pll_locked_i) begin
         if (reset_counter_q < ResetPhase1Count) begin
           // At the end of phase 1 we're in phase 2 which has unbounded length so stop counting
-          reset_counter_d <= reset_counter_d + 1;
+          reset_counter_d = reset_counter_q + 1;
         end
       end else begin
         // Hold reset counter at 0 when PLL isn't locked. When PLL locks we'll proceed through

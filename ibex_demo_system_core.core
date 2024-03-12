@@ -20,6 +20,8 @@ filesets:
       - rtl/system/uart.sv
       - rtl/system/spi_host.sv
       - rtl/system/spi_top.sv
+      - rtl/system/sonata_rgbled.sv
+      - rtl/system/ws281x_drv.sv
     file_type: systemVerilogSource
 
 targets:
